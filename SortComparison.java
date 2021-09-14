@@ -2,9 +2,6 @@
 
 import java.util.Arrays;
 
-import java.lang.Math;
-import java.io.StringWriter;
-
 public class SortComparison {
 
     public static void main(String[] args) {
@@ -96,7 +93,7 @@ public class SortComparison {
 
     public void Quicksort(TestInteger[] A, int p, int r){
         if(p < r){
-            int q = Partition(A, p, r);
+            int q = Partition(A, p, r - 1);
             Quicksort(A, p, q - 1);
             Quicksort(A, q + 1, r);
         }
@@ -124,79 +121,68 @@ public class SortComparison {
     // Comparisons
 
     public void runComparisons(){
-        Integer[][] randomComparisonCount = new Integer[5][2];
-        Integer[][] increasingComparisonCount = new Integer[5][2];
-        Integer[][] subsequenceIncreasingComparisonCount = new Integer[5][2];
-        Integer[][] subsequenceDecreasingComparisonCount = new Integer[5][2];
-
-        // Arrays contain arrays of information in the format [quicksort, mergesort]
-
+        System.out.println("Random ordering of elements:");
         for(int i = 0; i < 5; i++){
-            randomComparisonCount[i] = randomSortComparison();
-            increasingComparisonCount[i] = increasingSortComparison();
-            subsequenceIncreasingComparisonCount[i] = subsequenceIncreasingSortComparison();
-            subsequenceDecreasingComparisonCount[i] = subsequenceDecreasingSortComparison();
+            System.out.println("Run " + (i + 1));
+            randomSortComparison();
         }
-
-        System.out.println("List of times when running quicksort on a randomized array: " + prettifyResultArray(randomComparisonCount, 0));
-        System.out.println("List of times when running mergesort on a randomized array: " +  prettifyResultArray(randomComparisonCount, 1));
-        System.out.println("List of times when running quicksort on a sorted array: " + prettifyResultArray(increasingComparisonCount, 0));
-        System.out.println("List of times when running mergesort on a sorted array: " + prettifyResultArray(increasingComparisonCount, 1));
-        System.out.println("List of times when running quicksort on an array with sorted subsequences: " + prettifyResultArray(subsequenceIncreasingComparisonCount, 0));
-        System.out.println("List of times when running mergesort on an array with sorted subsequences: " + prettifyResultArray(subsequenceIncreasingComparisonCount, 1));
-        System.out.println("List of times when running quicksort on an array with reverse-sorted subsequences: " + prettifyResultArray(subsequenceDecreasingComparisonCount, 0));
-        System.out.println("List of times when running quicksort on an array with reverse-sorted subsequences: " + prettifyResultArray(subsequenceDecreasingComparisonCount, 1));
+        System.out.println("Increasing order of elements:");
+        for(int i = 0; i < 5; i++){
+            System.out.println("Run " + (i + 1));
+            increasingSortComparison();
+        }
+        System.out.println("Increasing sequences of elements:");
+        for(int i = 0; i < 5; i++){
+            System.out.println("Run " + (i + 1));
+            subsequenceIncreasingSortComparison();
+        }
+        System.out.println("Decreasing sequences of elements:");
+        for(int i = 0; i < 5; i++){
+            System.out.println("Run " + (i + 1));
+            subsequenceDecreasingSortComparison();
+        }
     }
 
-    private Integer[] randomSortComparison(){
-        TestInteger[] toSort = new TestInteger[10000];
-        fillArrayRandom(toSort);
-        return compareSorting(toSort);
+    private void randomSortComparison(){
+        TestInteger[] toMergeSort = new TestInteger[10000];
+        fillArrayRandom(toMergeSort);
+        TestInteger[] toQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        compareSorting(toMergeSort, toQuickSort);
     }
 
-    private Integer[] increasingSortComparison(){
-        TestInteger[] toSort = new TestInteger[10000];
-        fillArrayIncreasing(toSort);
-        return compareSorting(toSort);
+    private void increasingSortComparison(){
+        TestInteger[] toMergeSort = new TestInteger[10000];
+        fillArrayIncreasing(toMergeSort);
+        TestInteger[] toQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        compareSorting(toMergeSort, toQuickSort);
     }
 
-    private Integer[] subsequenceIncreasingSortComparison(){
-        TestInteger[] toSort = new TestInteger[10000];
+    private void subsequenceIncreasingSortComparison(){
+        TestInteger[] toMergeSort = new TestInteger[10000];
         for(int i = 0; i < 9000; i += 1000){
-            fillArrayRangeIncreasing(toSort, i, i + 999);
+            fillArrayRangeIncreasing(toMergeSort, i, i + 999);
         }
-        return compareSorting(toSort);
+        TestInteger[] toQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        compareSorting(toMergeSort, toQuickSort);
     }
 
-    private Integer[] subsequenceDecreasingSortComparison(){
-        TestInteger[] toSort = new TestInteger[10000];
+    private void subsequenceDecreasingSortComparison(){
+        TestInteger[] toMergeSort = new TestInteger[10000];
         for(int i = 0; i < 9000; i += 1000){
-            fillArrayRangeDecreasing(toSort, i, i + 999);
+            fillArrayRangeDecreasing(toMergeSort, i, i + 999);
         }
-        return compareSorting(toSort);
+        TestInteger[] toQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        compareSorting(toMergeSort, toQuickSort);
     }
 
-    private Integer[] compareSorting(TestInteger[] toSort){
-        Integer[] output = new Integer[2];
-        Quicksort(java.util.Arrays.copyOf(toSort, toSort.length), 0, toSort.length);
-        output[0] = (int)TestInteger.getCounter();
+    private void compareSorting(TestInteger[] toMergeSort, TestInteger[] toQuickSort)
+    {
+        Arrays.sort(toMergeSort);
+        System.out.println("Counter for mergesort: " + TestInteger.getCounter());
         TestInteger.resetCounter();
-        java.util.Arrays.sort(toSort);
-        output[1] = (int)TestInteger.getCounter();
+        Quicksort(toQuickSort, 0, toQuickSort.length);
+        System.out.println("Counter for quicksort: " + TestInteger.getCounter());
         TestInteger.resetCounter();
-        return output;
-    }
-
-
-    private String prettifyResultArray(Integer[][] input, int column){
-        StringWriter output = new StringWriter();
-        output.write('[');
-        for(int i = 0; i < input.length; i++){
-            output.write(input[i][column].toString());
-            output.write(", ");
-        }
-        output.write(']');
-        return output.toString();
     }
 
 }
