@@ -1,16 +1,18 @@
 //Ben B, Ben G
 
 import java.util.Arrays;
+
 import java.lang.Math;
 import java.io.StringWriter;
 
 public class SortComparison {
 
     public static void main(String[] args) {
-        runComparisons();
+        SortComparison sort = new SortComparison();
+        sort.runComparisons();
     }
 
-    protected class TestInteger implements Comparable<TestInteger> {
+    protected static class TestInteger implements Comparable<TestInteger> {
         private static long counter = 0;
 
         public final int value;
@@ -19,17 +21,17 @@ public class SortComparison {
             this.value = value;
         }
 
-        public long getCounter() {
+        public static long getCounter() {
             return counter;
         }
 
-        public void resetCounter() {
+        public static void resetCounter() {
             counter = 0;
         }
 
         public int compareTo(TestInteger that) {
             counter++;
-            Integer.compare(this.value, that.value);
+            return Integer.compare(this.value, that.value);
         }
 
     }
@@ -60,21 +62,21 @@ public class SortComparison {
 
     private void fillArrayRandom(TestInteger[] toFill, int upperBound) {
         for(int i = 0; i < toFill.length; i++){
-            toFill[i] = new TestInteger((Integer) (java.lang.Math.random() * (upperBound - 1)) + 1);
+            toFill[i] = new TestInteger((int)((java.lang.Math.random() * (upperBound - 1)) + 1));
         }
     }
 
     private void fillArrayRangeIncreasing(TestInteger[] toFill, int startPosition, int endPosition){
-        int baseRandom = ((Integer) java.lang.Math.random() * 999989) + 1;
+        int baseRandom = ((int) ((java.lang.Math.random() * 999989) + 1));
         for(int i = 0; i <= endPosition - startPosition; i++){
             toFill[i + startPosition] = new TestInteger(baseRandom + i);
         }
     }
 
     private void fillArrayRangeDecreasing(TestInteger[] toFill, int startPosition, int endPosition){
-        int baseRandom = ((Integer) java.lang.Math.random() * 999988);
+        Integer baseRandom = ((int) (java.lang.Math.random() * 999988));
         for(int i = 0; i <= endPosition - startPosition; i++){
-            toFill[startPosition + i] = 1000000 - (baseRandom + i);
+            toFill[startPosition + i] = new TestInteger(1000000 - (baseRandom + i));
         }
     }
 
@@ -113,8 +115,8 @@ public class SortComparison {
         return i + 1;
     }
 
-    private void exchange(N[] A, int p, int q){
-        N storage = A[p];
+    private void exchange(TestInteger[] A, int p, int q){
+        TestInteger storage = A[p];
         A[p] = A[q];
         A[q] = storage;
     }
@@ -136,14 +138,14 @@ public class SortComparison {
             subsequenceDecreasingComparisonCount[i] = subsequenceDecreasingSortComparison();
         }
 
-        System.out.println("List of times when running quicksort on a randomized array: ", prettifyResultArray(randomComparisonCount, 0));
-        System.out.println("List of times when running mergesort on a randomized array: ", prettifyResultArray(randomComparisonCount, 1));
-        System.out.println("List of times when running quicksort on a sorted array: ", prettifyResultArray(increasingComparisonCount, 0));
-        System.out.println("List of times when running mergesort on a sorted array: ", prettifyResultArray(increasingComparisonCount, 1));
-        System.out.println("List of times when running quicksort on an array with sorted subsequences: ", prettifyResultArray(subsequenceIncreasingComparisonCount, 0));
-        System.out.println("List of times when running mergesort on an array with sorted subsequences: ", prettifyResultArray(subsequenceIncreasingComparisonCount, 1));
-        System.out.println("List of times when running quicksort on an array with reverse-sorted subsequences: ", prettifyResultArray(subsequenceDecreasingComparisonCount, 0));
-        System.out.println("List of times when running quicksort on an array with reverse-sorted subsequences: ", prettifyResultArray(subsequenceDecreasingComparisonCount, 1));
+        System.out.println("List of times when running quicksort on a randomized array: " + prettifyResultArray(randomComparisonCount, 0));
+        System.out.println("List of times when running mergesort on a randomized array: " +  prettifyResultArray(randomComparisonCount, 1));
+        System.out.println("List of times when running quicksort on a sorted array: " + prettifyResultArray(increasingComparisonCount, 0));
+        System.out.println("List of times when running mergesort on a sorted array: " + prettifyResultArray(increasingComparisonCount, 1));
+        System.out.println("List of times when running quicksort on an array with sorted subsequences: " + prettifyResultArray(subsequenceIncreasingComparisonCount, 0));
+        System.out.println("List of times when running mergesort on an array with sorted subsequences: " + prettifyResultArray(subsequenceIncreasingComparisonCount, 1));
+        System.out.println("List of times when running quicksort on an array with reverse-sorted subsequences: " + prettifyResultArray(subsequenceDecreasingComparisonCount, 0));
+        System.out.println("List of times when running quicksort on an array with reverse-sorted subsequences: " + prettifyResultArray(subsequenceDecreasingComparisonCount, 1));
     }
 
     private Integer[] randomSortComparison(){
@@ -177,10 +179,10 @@ public class SortComparison {
     private Integer[] compareSorting(TestInteger[] toSort){
         Integer[] output = new Integer[2];
         Quicksort(java.util.Arrays.copyOf(toSort, toSort.length), 0, toSort.length);
-        output[0] = TestInteger.getCounter();
+        output[0] = (int)TestInteger.getCounter();
         TestInteger.resetCounter();
         java.util.Arrays.sort(toSort);
-        output[1] = TestInteger.getCounter();
+        output[1] = (int)TestInteger.getCounter();
         TestInteger.resetCounter();
         return output;
     }
