@@ -20,7 +20,6 @@ import java.util.Arrays;
 // Counter for mergesort: 120386
 // Counter for quicksort: 159868
 
-
 // Increasing order of elements:
 // Run 1
 // Counter for mergesort: 9999
@@ -38,7 +37,6 @@ import java.util.Arrays;
 // Counter for mergesort: 9999
 // Counter for quicksort: 49995000
 
-
 // Increasing sequences of elements:
 // Run 1
 // Counter for mergesort: 10323
@@ -55,7 +53,6 @@ import java.util.Arrays;
 // Run 5
 // Counter for mergesort: 10261
 // Counter for quicksort: 13014000
-
 
 // Decreasing sequences of elements:
 // Run 1
@@ -152,6 +149,14 @@ public class SortComparison {
         }
     }
 
+    public void RandomizedQuicksort(TestInteger[] A, int p, int r) {
+        if (p < r) {
+            int q = RandomizedPartition(A, p, r);
+            RandomizedQuicksort(A, p, q - 1);
+            RandomizedQuicksort(A, q + 1, r);
+        }
+    }
+
     public int Partition(TestInteger[] A, int p, int r) {
         TestInteger x = A[r];
         int i = p - 1;
@@ -163,6 +168,12 @@ public class SortComparison {
         }
         exchange(A, i + 1, r);
         return i + 1;
+    }
+
+    public int RandomizedPartition(TestInteger[] A, int p, int r) {
+        int i = (int)(Math.random() * (r - p) + p);
+        exchange(A, r, i);
+        return Partition(A, p, r);
     }
 
     private void exchange(TestInteger[] A, int p, int q) {
@@ -200,14 +211,19 @@ public class SortComparison {
         TestInteger[] toMergeSort = new TestInteger[10000];
         fillArrayRandom(toMergeSort);
         TestInteger[] toQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
-        compareSorting(toMergeSort, toQuickSort);
+        TestInteger[] toRandomizedQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        // TestInteger[] toMedianQuicksort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        // TestInteger[] toInsertionEndSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        // TestInteger[] toExtraCreditSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort);
     }
 
     private void increasingSortComparison() {
         TestInteger[] toMergeSort = new TestInteger[10000];
         fillArrayIncreasing(toMergeSort);
         TestInteger[] toQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
-        compareSorting(toMergeSort, toQuickSort);
+        TestInteger[] toRandomizedQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort);
     }
 
     private void subsequenceIncreasingSortComparison() {
@@ -216,7 +232,8 @@ public class SortComparison {
             fillArrayRangeIncreasing(toMergeSort, i, i + 999);
         }
         TestInteger[] toQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
-        compareSorting(toMergeSort, toQuickSort);
+        TestInteger[] toRandomizedQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort);
     }
 
     private void subsequenceDecreasingSortComparison() {
@@ -225,10 +242,11 @@ public class SortComparison {
             fillArrayRangeDecreasing(toMergeSort, i, i + 999);
         }
         TestInteger[] toQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
-        compareSorting(toMergeSort, toQuickSort);
+        TestInteger[] toRandomizedQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort);
     }
 
-    private void compareSorting(TestInteger[] toMergeSort, TestInteger[] toQuickSort) {
+    private void compareSorting(TestInteger[] toMergeSort, TestInteger[] toQuickSort, TestInteger[] toRandomizedQuicksort) {
         Arrays.sort(toMergeSort);
         if (isSorted(toMergeSort)) {
             System.out.println("Counter for mergesort: " + TestInteger.getCounter());
@@ -238,6 +256,12 @@ public class SortComparison {
         Quicksort(toQuickSort, 0, toQuickSort.length - 1);
         if (isSorted(toQuickSort)) {
             System.out.println("Counter for quicksort: " + TestInteger.getCounter());
+        }
+        TestInteger.resetCounter();
+
+        RandomizedQuicksort(toRandomizedQuicksort, 0, toRandomizedQuicksort.length - 1);
+        if (isSorted(toRandomizedQuicksort)) {
+            System.out.println("Counter for randomized quicksort: " + TestInteger.getCounter());
         }
         TestInteger.resetCounter();
     }
