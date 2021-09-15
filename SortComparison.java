@@ -109,7 +109,6 @@ import java.util.Arrays;
 // Counter for randomized quicksort: 155898
 // Counter for median quicksort: 183872
 
-
 // approximating best k value compared to randomquicksort (20 trials) ->
 // testing k = 50 -> median bettter 1 time, 4 times, 2 times, 3 times, 2 times -> avg = 2.4
 // testing k = 75 -> median better 3 times, 2 times, 2 times, 1 time, 2 times -> avg = 2
@@ -142,11 +141,31 @@ import java.util.Arrays;
 // testing k = 500 -> total counts: 3343461
 // testing k = 1000-> total counts: 3387802
 
+
+// finding best sub-array length for swapping to insertion sort (comparing total comparisons across all 20 runs of the different arrangements of elements)
+// best length for sub-arrays where we need to swap to insertionsort seems to be length < 11
+
+// threshold = 2 -> 163557160 less comparisons than regular quicksort
+// threshold = 5 -> 182974759 less comparisons than regular quicksort
+// threshold = 10-> 184949855 less comparisons than regular quicksort
+
+// threshold = 11-> 190821526 less comparisons than regular quicksort
+
+// threshold = 12-> 182410551 less comparisons than regular quicksort
+// threshold = 15-> 161089682 less comparisons than regular quicksort
+
 public class SortComparison {
-    public static int medianTotalCount = 0;
-    public static int medianBetterCount = 0;
-    public static int randomBetterCount = 0;
-    public static int k = 50; // threshold value for swapping from median of three pivot to regular (last index) pivot
+    // logging variables to help determine performance
+    // public static int medianTotalCount = 0;
+    // public static int medianBetterCount = 0;
+    // public static int randomBetterCount = 0;
+    public static int insertEndTotalCount = 0;
+    public static int quickTotalCount = 0;
+
+    // threshold value for swapping from median of three pivot to regular
+    // (lastindex) pivot
+    public static int k = 50;
+    public static int insertionSortThreshold = 11;
 
     public static void main(String[] args) {
         SortComparison sort = new SortComparison();
@@ -154,7 +173,16 @@ public class SortComparison {
 
         // logging info to help determine good k value
         // System.out.println("total count for medianquicksort: " + medianTotalCount);
-        // System.out.println("random was better " + randomBetterCount + " time(s), while median was better " + medianBetterCount + " time(s).");
+        // System.out.println("random was better " + randomBetterCount + " time(s),
+        // while median was better " + medianBetterCount + " time(s).");
+
+        // logging info to help determine subarray length for insertion sort swapping
+        System.out.println("total count for quick -> insertion sort swap: " + insertEndTotalCount);
+        System.out.println("total count for regular quick swap: " + quickTotalCount);
+        System.out.println(
+                "is the insertionEnd swap making it take less comparisons? " + (insertEndTotalCount < quickTotalCount)
+                        + ". insertEndTotalCount - quickTotalCount = " + (insertEndTotalCount - quickTotalCount));
+        System.out.println("division: " + insertEndTotalCount / quickTotalCount);
     }
 
     protected static class TestInteger implements Comparable<TestInteger> {
@@ -220,7 +248,7 @@ public class SortComparison {
         return true;
     }
 
-    public void Quicksort(TestInteger[] A, int p, int r) {
+    private void Quicksort(TestInteger[] A, int p, int r) {
         if (p < r) {
             int q = Partition(A, p, r);
             Quicksort(A, p, q - 1);
@@ -228,7 +256,7 @@ public class SortComparison {
         }
     }
 
-    public int Partition(TestInteger[] A, int p, int r) {
+    private int Partition(TestInteger[] A, int p, int r) {
         TestInteger x = A[r];
         int i = p - 1;
         for (int j = p; j < r; j++) {
@@ -241,7 +269,7 @@ public class SortComparison {
         return i + 1;
     }
 
-    public void RandomizedQuicksort(TestInteger[] A, int p, int r) {
+    private void RandomizedQuicksort(TestInteger[] A, int p, int r) {
         if (p < r) {
             int q = RandomizedPartition(A, p, r);
             RandomizedQuicksort(A, p, q - 1);
@@ -249,13 +277,13 @@ public class SortComparison {
         }
     }
 
-    public int RandomizedPartition(TestInteger[] A, int p, int r) {
+    private int RandomizedPartition(TestInteger[] A, int p, int r) {
         int i = (int) (Math.random() * (r - p) + p);
         exchange(A, r, i);
         return Partition(A, p, r);
     }
 
-    public void MedianQuicksort(TestInteger[] A, int p, int r) {
+    private void MedianQuicksort(TestInteger[] A, int p, int r) {
         if (p < r) {
             if (A.length < k) // length less than k -> back to regular partition -> optimal k seems to be ~125
             {
@@ -270,17 +298,42 @@ public class SortComparison {
         }
     }
 
-    public int MedianPartition(TestInteger[] A, int p, int r) {
+    private int MedianPartition(TestInteger[] A, int p, int r) {
         TestInteger[] potentialPivotIndices = new TestInteger[3];
         for (int i = 0; i < potentialPivotIndices.length; i++) {
             potentialPivotIndices[i] = new TestInteger((int) (Math.random() * (r - p) + p));
         }
-        exchange(A, r, sortPivotArray(potentialPivotIndices[0], potentialPivotIndices[1], potentialPivotIndices[2]).value);
+        exchange(A, r,
+                sortPivotArray(potentialPivotIndices[0], potentialPivotIndices[1], potentialPivotIndices[2]).value);
         return Partition(A, p, r);
     }
 
+    private void QuickToInsertionSort(TestInteger[] A, int p, int r) {
+        if (p < r) {
+            int q = Partition(A, p, r);
+            if ((r - q) < insertionSortThreshold) {
+                InsertionSort(A);
+            } else {
+                QuickToInsertionSort(A, p, q - 1);
+                QuickToInsertionSort(A, q + 1, r);
+            }
+        }
+    }
+
+    private void InsertionSort(TestInteger[] toSort) {
+        for (int j = 1; j < toSort.length; j++) {
+            TestInteger key = toSort[j];
+            int i = j - 1;
+            while (i >= 0 && toSort[i].compareTo(key) > 0) {
+                toSort[i + 1] = toSort[i];
+                i = i - 1;
+            }
+            toSort[i + 1] = key;
+        }
+    }
+
     // returns median of three given TestIntegers
-    public TestInteger sortPivotArray(TestInteger a, TestInteger b, TestInteger c) {
+    private TestInteger sortPivotArray(TestInteger a, TestInteger b, TestInteger c) {
         if (a.compareTo(b) >= 0 && b.compareTo(c) >= 0) { // a >= b && b >= c
             return b;
         } else if (b.compareTo(a) >= 0 && a.compareTo(c) >= 0) { // b >= a && a >= c
@@ -297,7 +350,7 @@ public class SortComparison {
 
     // Comparisons
 
-    public void runComparisons() {
+    private void runComparisons() {
         System.out.println("Random ordering of elements:");
         for (int i = 0; i < 5; i++) {
             System.out.println("Run " + (i + 1));
@@ -326,11 +379,10 @@ public class SortComparison {
         TestInteger[] toQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
         TestInteger[] toRandomizedQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
         TestInteger[] toMedianQuicksort = Arrays.copyOf(toMergeSort, toMergeSort.length);
-        // TestInteger[] toInsertionEndSort = Arrays.copyOf(toMergeSort,
-        // toMergeSort.length);
+        TestInteger[] toInsertionEndSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
         // TestInteger[] toExtraCreditSort = Arrays.copyOf(toMergeSort,
         // toMergeSort.length);
-        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort, toMedianQuicksort);
+        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort, toMedianQuicksort, toInsertionEndSort);
     }
 
     private void increasingSortComparison() {
@@ -339,7 +391,8 @@ public class SortComparison {
         TestInteger[] toQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
         TestInteger[] toRandomizedQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
         TestInteger[] toMedianQuicksort = Arrays.copyOf(toMergeSort, toMergeSort.length);
-        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort, toMedianQuicksort);
+        TestInteger[] toInsertionEndSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort, toMedianQuicksort, toInsertionEndSort);
     }
 
     private void subsequenceIncreasingSortComparison() {
@@ -350,7 +403,8 @@ public class SortComparison {
         TestInteger[] toQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
         TestInteger[] toRandomizedQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
         TestInteger[] toMedianQuicksort = Arrays.copyOf(toMergeSort, toMergeSort.length);
-        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort, toMedianQuicksort);
+        TestInteger[] toInsertionEndSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort, toMedianQuicksort, toInsertionEndSort);
     }
 
     private void subsequenceDecreasingSortComparison() {
@@ -361,43 +415,52 @@ public class SortComparison {
         TestInteger[] toQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
         TestInteger[] toRandomizedQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
         TestInteger[] toMedianQuicksort = Arrays.copyOf(toMergeSort, toMergeSort.length);
-        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort, toMedianQuicksort);
+        TestInteger[] toInsertionEndSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort, toMedianQuicksort, toInsertionEndSort);
     }
 
     private void compareSorting(TestInteger[] toMergeSort, TestInteger[] toQuickSort,
-            TestInteger[] toRandomizedQuicksort, TestInteger[] toMedianQuicksort) {
+            TestInteger[] toRandomizedQuicksort, TestInteger[] toMedianQuicksort, TestInteger[] toInsertionEndSort) {
         Arrays.sort(toMergeSort);
         System.out.println("Counter for mergesort: " + TestInteger.getCounter());
         TestInteger.resetCounter();
 
         Quicksort(toQuickSort, 0, toQuickSort.length - 1);
+        long quickCount = TestInteger.getCounter();
         System.out.println("Counter for quicksort: " + TestInteger.getCounter());
         TestInteger.resetCounter();
 
         RandomizedQuicksort(toRandomizedQuicksort, 0, toRandomizedQuicksort.length - 1);
         System.out.println("Counter for randomized quicksort: " + TestInteger.getCounter());
-        long randomCount = TestInteger.getCounter();
+        // long randomCount = TestInteger.getCounter();
         TestInteger.resetCounter();
 
         MedianQuicksort(toMedianQuicksort, 0, toMedianQuicksort.length - 1);
         System.out.println("Counter for median quicksort: " + TestInteger.getCounter());
-        long medianCount = TestInteger.getCounter(); 
+        // long medianCount = TestInteger.getCounter();
         TestInteger.resetCounter();
 
-        medianTotalCount += medianCount;
-
-        checkQuickSortPerformance(medianCount, randomCount);
-
-    }
-
-    //testing which quicksort modification is working better for the most cases
-    private void checkQuickSortPerformance(long medianCount, long randomCount)
-    {
-        if (medianCount <= randomCount)
-        {
-            medianBetterCount++;
+        QuickToInsertionSort(toInsertionEndSort, 0, toInsertionEndSort.length - 1);
+        if (isSorted(toInsertionEndSort)) {
+            System.out.println("Counter for insertion ending sort: " + TestInteger.getCounter());
         }
-        else randomBetterCount++;
+        long insertionEndCount = TestInteger.getCounter();
+        TestInteger.resetCounter();
+
+        // medianTotalCount += medianCount;
+        insertEndTotalCount += insertionEndCount;
+        quickTotalCount += quickCount;
+
+        // checkQuickSortPerformance(medianCount, randomCount);
+
     }
+
+    // testing which quicksort modification is working better for the most cases
+    // private void checkQuickSortPerformance(long medianCount, long randomCount) {
+    // if (medianCount <= randomCount) {
+    // medianBetterCount++;
+    // } else
+    // randomBetterCount++;
+    // }
 
 }
