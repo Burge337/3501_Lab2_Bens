@@ -149,14 +149,6 @@ public class SortComparison {
         }
     }
 
-    public void RandomizedQuicksort(TestInteger[] A, int p, int r) {
-        if (p < r) {
-            int q = RandomizedPartition(A, p, r);
-            RandomizedQuicksort(A, p, q - 1);
-            RandomizedQuicksort(A, q + 1, r);
-        }
-    }
-
     public int Partition(TestInteger[] A, int p, int r) {
         TestInteger x = A[r];
         int i = p - 1;
@@ -170,10 +162,45 @@ public class SortComparison {
         return i + 1;
     }
 
+    public void RandomizedQuicksort(TestInteger[] A, int p, int r) {
+        if (p < r) {
+            int q = RandomizedPartition(A, p, r);
+            RandomizedQuicksort(A, p, q - 1);
+            RandomizedQuicksort(A, q + 1, r);
+        }
+    }
+
     public int RandomizedPartition(TestInteger[] A, int p, int r) {
-        int i = (int)(Math.random() * (r - p) + p);
+        int i = (int) (Math.random() * (r - p) + p);
         exchange(A, r, i);
         return Partition(A, p, r);
+    }
+
+    public void MedianQuicksort(TestInteger[] A, int p, int r) {
+        if (p < r) {
+            int q = MedianPartition(A, p, r);
+            MedianQuicksort(A, p, q - 1);
+            MedianQuicksort(A, q + 1, r);
+        }
+    }
+
+    public int MedianPartition(TestInteger[] A, int p, int r) {
+        TestInteger[] potentialPivotIndices = new TestInteger[3];
+        for (int i = 0; i < potentialPivotIndices.length; i++) {
+            potentialPivotIndices[i] = new TestInteger((int) (Math.random() * (r - p) + p));
+        }
+        exchange(A, r, sortPivotArray(potentialPivotIndices[0], potentialPivotIndices[1], potentialPivotIndices[2]).value);
+        return Partition(A, p, r);
+    }
+
+    // returns median of three given TestIntegers
+    public TestInteger sortPivotArray(TestInteger a, TestInteger b, TestInteger c) {
+        if (a.compareTo(b) >= 0 && b.compareTo(c) >= 0) { // a >= b && b >= c
+            return b;
+        } else if (b.compareTo(a) >= 0 && a.compareTo(c) >= 0) { // b >= a && a >= c
+            return a;
+        } else
+            return c;
     }
 
     private void exchange(TestInteger[] A, int p, int q) {
@@ -212,10 +239,12 @@ public class SortComparison {
         fillArrayRandom(toMergeSort);
         TestInteger[] toQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
         TestInteger[] toRandomizedQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
-        // TestInteger[] toMedianQuicksort = Arrays.copyOf(toMergeSort, toMergeSort.length);
-        // TestInteger[] toInsertionEndSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
-        // TestInteger[] toExtraCreditSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
-        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort);
+        TestInteger[] toMedianQuicksort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        // TestInteger[] toInsertionEndSort = Arrays.copyOf(toMergeSort,
+        // toMergeSort.length);
+        // TestInteger[] toExtraCreditSort = Arrays.copyOf(toMergeSort,
+        // toMergeSort.length);
+        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort, toMedianQuicksort);
     }
 
     private void increasingSortComparison() {
@@ -223,7 +252,8 @@ public class SortComparison {
         fillArrayIncreasing(toMergeSort);
         TestInteger[] toQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
         TestInteger[] toRandomizedQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
-        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort);
+        TestInteger[] toMedianQuicksort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort, toMedianQuicksort);
     }
 
     private void subsequenceIncreasingSortComparison() {
@@ -233,7 +263,8 @@ public class SortComparison {
         }
         TestInteger[] toQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
         TestInteger[] toRandomizedQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
-        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort);
+        TestInteger[] toMedianQuicksort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort, toMedianQuicksort);
     }
 
     private void subsequenceDecreasingSortComparison() {
@@ -243,10 +274,12 @@ public class SortComparison {
         }
         TestInteger[] toQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
         TestInteger[] toRandomizedQuickSort = Arrays.copyOf(toMergeSort, toMergeSort.length);
-        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort);
+        TestInteger[] toMedianQuicksort = Arrays.copyOf(toMergeSort, toMergeSort.length);
+        compareSorting(toMergeSort, toQuickSort, toRandomizedQuickSort, toMedianQuicksort);
     }
 
-    private void compareSorting(TestInteger[] toMergeSort, TestInteger[] toQuickSort, TestInteger[] toRandomizedQuicksort) {
+    private void compareSorting(TestInteger[] toMergeSort, TestInteger[] toQuickSort,
+            TestInteger[] toRandomizedQuicksort, TestInteger[] toMedianQuicksort) {
         Arrays.sort(toMergeSort);
         if (isSorted(toMergeSort)) {
             System.out.println("Counter for mergesort: " + TestInteger.getCounter());
@@ -264,6 +297,11 @@ public class SortComparison {
             System.out.println("Counter for randomized quicksort: " + TestInteger.getCounter());
         }
         TestInteger.resetCounter();
+
+        MedianQuicksort(toMedianQuicksort, 0, toMedianQuicksort.length - 1);
+        if (isSorted(toMedianQuicksort)) {
+            System.out.println("Counter for median quicksort: " + TestInteger.getCounter());
+        }
     }
 
 }
