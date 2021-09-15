@@ -3,79 +3,158 @@
 import java.util.Arrays;
 
 // findings from count comparisons
+
 // Random ordering of elements:
 // Run 1
-// Counter for mergesort: 120346
-// Counter for quicksort: 157680
+// Counter for mergesort: 120429
+// Counter for quicksort: 163255
+// Counter for randomized quicksort: 149340
+// Counter for median quicksort: 169196
 // Run 2
-// Counter for mergesort: 120487
-// Counter for quicksort: 148904
+// Counter for mergesort: 120407
+// Counter for quicksort: 147780
+// Counter for randomized quicksort: 164674
+// Counter for median quicksort: 173658
 // Run 3
-// Counter for mergesort: 120303
-// Counter for quicksort: 150853
+// Counter for mergesort: 120391
+// Counter for quicksort: 162016
+// Counter for randomized quicksort: 143712
+// Counter for median quicksort: 168393
 // Run 4
-// Counter for mergesort: 120355
-// Counter for quicksort: 149532
+// Counter for mergesort: 120332
+// Counter for quicksort: 160432
+// Counter for randomized quicksort: 163897
+// Counter for median quicksort: 165613
 // Run 5
-// Counter for mergesort: 120386
-// Counter for quicksort: 159868
-
+// Counter for mergesort: 120363
+// Counter for quicksort: 159253
+// Counter for randomized quicksort: 154131
+// Counter for median quicksort: 171310
 // Increasing order of elements:
 // Run 1
 // Counter for mergesort: 9999
 // Counter for quicksort: 49995000
+// Counter for randomized quicksort: 156789
+// Counter for median quicksort: 157197
 // Run 2
 // Counter for mergesort: 9999
 // Counter for quicksort: 49995000
+// Counter for randomized quicksort: 158173
+// Counter for median quicksort: 159872
 // Run 3
 // Counter for mergesort: 9999
 // Counter for quicksort: 49995000
+// Counter for randomized quicksort: 151532
+// Counter for median quicksort: 163218
 // Run 4
 // Counter for mergesort: 9999
 // Counter for quicksort: 49995000
+// Counter for randomized quicksort: 149052
+// Counter for median quicksort: 162314
 // Run 5
 // Counter for mergesort: 9999
 // Counter for quicksort: 49995000
-
+// Counter for randomized quicksort: 152741
+// Counter for median quicksort: 160945
 // Increasing sequences of elements:
 // Run 1
-// Counter for mergesort: 10323
-// Counter for quicksort: 15005000
+// Counter for mergesort: 10246
+// Counter for quicksort: 17004000
+// Counter for randomized quicksort: 157617
+// Counter for median quicksort: 157925
 // Run 2
-// Counter for mergesort: 10320
-// Counter for quicksort: 11011000
+// Counter for mergesort: 10357
+// Counter for quicksort: 14013000
+// Counter for randomized quicksort: 154196
+// Counter for median quicksort: 170168
 // Run 3
-// Counter for mergesort: 10231
-// Counter for quicksort: 13006000
+// Counter for mergesort: 10328
+// Counter for quicksort: 16011000
+// Counter for randomized quicksort: 158878
+// Counter for median quicksort: 167280
 // Run 4
-// Counter for mergesort: 10279
-// Counter for quicksort: 10015000
+// Counter for mergesort: 10260
+// Counter for quicksort: 18004000
+// Counter for randomized quicksort: 146558
+// Counter for median quicksort: 175694
 // Run 5
-// Counter for mergesort: 10261
-// Counter for quicksort: 13014000
-
+// Counter for mergesort: 10200
+// Counter for quicksort: 13012000
+// Counter for randomized quicksort: 164578
+// Counter for median quicksort: 169676
 // Decreasing sequences of elements:
 // Run 1
-// Counter for mergesort: 10211
-// Counter for quicksort: 26003000
+// Counter for mergesort: 10297
+// Counter for quicksort: 10010000
+// Counter for randomized quicksort: 156028
+// Counter for median quicksort: 165028
 // Run 2
-// Counter for mergesort: 10313
-// Counter for quicksort: 12013000
+// Counter for mergesort: 10239
+// Counter for quicksort: 16007000
+// Counter for randomized quicksort: 171002
+// Counter for median quicksort: 176159
 // Run 3
-// Counter for mergesort: 10199
-// Counter for quicksort: 12011000
+// Counter for mergesort: 10350
+// Counter for quicksort: 7014000
+// Counter for randomized quicksort: 162907
+// Counter for median quicksort: 164813
 // Run 4
-// Counter for mergesort: 10249
-// Counter for quicksort: 9018000
+// Counter for mergesort: 10306
+// Counter for quicksort: 21014000
+// Counter for randomized quicksort: 152698
+// Counter for median quicksort: 165209
 // Run 5
-// Counter for mergesort: 10232
-// Counter for quicksort: 11018000
+// Counter for mergesort: 10362
+// Counter for quicksort: 15007000
+// Counter for randomized quicksort: 155898
+// Counter for median quicksort: 183872
+
+
+// approximating best k value compared to randomquicksort (20 trials) ->
+// testing k = 50 -> median bettter 1 time, 4 times, 2 times, 3 times, 2 times -> avg = 2.4
+// testing k = 75 -> median better 3 times, 2 times, 2 times, 1 time, 2 times -> avg = 2
+// testing k = 100 -> median better 5 times, 3 times, 2 times, 2 times, 1 time -> avg = 2.6
+// testing k = 115 -> median better 1 time, 2 times, 0 times, 2 times, 2 times -> avg = 1.4
+// testing k = 120 -> median better 1 time, 3 times, 1 time, 0 times, 5 times -> avg = 2
+// testing k = 123 -> median better 1 time, 0 times, 3 times, 2 times, 6 times -> 2.4
+
+// testing k = 125 -> median better 4 times, 2 times, 6 times, 3 times, 3 times -> avg = 3.6
+
+// testing k = 127 -> median better 2 times, 3 times, 4 times, 5 times, 2 times -> avg = 3.2
+// testing k = 130 -> median better 5 times, 6 times, 1 time, 2 times, 1 time -> avg = 3
+// testing k = 135 -> median better 2 times, 2 times, 2 times, 3 times, 3 times -> avg = 2.4
+// testing k = 150 -> median better 1 time, 3 times, 4 times, 4 times, 1 time -> avg = 2.6
+// testing k = 175 -> median better 0 times, 4 times, 2 times, 1 time, 2 times -> avg = 1.8
+// testing k = 250 -> median better 2 times, 2 times, 4 times, 1 time, 2 times -> avg = 2.2
+// testing k = 500 -> median better 2 times, 1 time, 3 times, 4 times, 1 time -> avg = 2.2
+// testing k = 1000 -> median better 1 time, 3 times, 4 times, 0 times , 1 time -> avg = 1.8 
+// testing k = 1500 -> median better 2 times, 2 times, 3 times, 2 times, 3 times -> avg = 2.4
+// testing k = 2000 -> median better 3 times, 1 time, 2 times, 2 times, 3 times -> avg = 2.2
+// testing k = 2500 -> median better 0 times, 2 times, 2 times, 1 time, 2 times -> avg = 1.4
+
+// testing k = 50 -> total counts:  3347540
+// testing k = 100 -> total counts: 3370787
+
+// k = 125 has lowest total counts of tested k values both relative to randomquicksort performance and total comparisons in general
+// testing k = 125 -> total counts: 3324298
+
+// testing k = 150 -> total counts: 3344073
+// testing k = 500 -> total counts: 3343461
+// testing k = 1000-> total counts: 3387802
 
 public class SortComparison {
+    public static int medianTotalCount = 0;
+    public static int medianBetterCount = 0;
+    public static int randomBetterCount = 0;
+    public static int k = 50; // threshold value for swapping from median of three pivot to regular (last index) pivot
 
     public static void main(String[] args) {
         SortComparison sort = new SortComparison();
         sort.runComparisons();
+
+        // logging info to help determine good k value
+        // System.out.println("total count for medianquicksort: " + medianTotalCount);
+        // System.out.println("random was better " + randomBetterCount + " time(s), while median was better " + medianBetterCount + " time(s).");
     }
 
     protected static class TestInteger implements Comparable<TestInteger> {
@@ -178,9 +257,16 @@ public class SortComparison {
 
     public void MedianQuicksort(TestInteger[] A, int p, int r) {
         if (p < r) {
-            int q = MedianPartition(A, p, r);
-            MedianQuicksort(A, p, q - 1);
-            MedianQuicksort(A, q + 1, r);
+            if (A.length < k) // length less than k -> back to regular partition -> optimal k seems to be ~125
+            {
+                int q = Partition(A, p, r);
+                Quicksort(A, p, q - 1);
+                Quicksort(A, q + 1, r);
+            } else {
+                int q = MedianPartition(A, p, r);
+                MedianQuicksort(A, p, q - 1);
+                MedianQuicksort(A, q + 1, r);
+            }
         }
     }
 
@@ -281,27 +367,37 @@ public class SortComparison {
     private void compareSorting(TestInteger[] toMergeSort, TestInteger[] toQuickSort,
             TestInteger[] toRandomizedQuicksort, TestInteger[] toMedianQuicksort) {
         Arrays.sort(toMergeSort);
-        if (isSorted(toMergeSort)) {
-            System.out.println("Counter for mergesort: " + TestInteger.getCounter());
-        }
+        System.out.println("Counter for mergesort: " + TestInteger.getCounter());
         TestInteger.resetCounter();
 
         Quicksort(toQuickSort, 0, toQuickSort.length - 1);
-        if (isSorted(toQuickSort)) {
-            System.out.println("Counter for quicksort: " + TestInteger.getCounter());
-        }
+        System.out.println("Counter for quicksort: " + TestInteger.getCounter());
         TestInteger.resetCounter();
 
         RandomizedQuicksort(toRandomizedQuicksort, 0, toRandomizedQuicksort.length - 1);
-        if (isSorted(toRandomizedQuicksort)) {
-            System.out.println("Counter for randomized quicksort: " + TestInteger.getCounter());
-        }
+        System.out.println("Counter for randomized quicksort: " + TestInteger.getCounter());
+        long randomCount = TestInteger.getCounter();
         TestInteger.resetCounter();
 
         MedianQuicksort(toMedianQuicksort, 0, toMedianQuicksort.length - 1);
-        if (isSorted(toMedianQuicksort)) {
-            System.out.println("Counter for median quicksort: " + TestInteger.getCounter());
+        System.out.println("Counter for median quicksort: " + TestInteger.getCounter());
+        long medianCount = TestInteger.getCounter(); 
+        TestInteger.resetCounter();
+
+        medianTotalCount += medianCount;
+
+        checkQuickSortPerformance(medianCount, randomCount);
+
+    }
+
+    //testing which quicksort modification is working better for the most cases
+    private void checkQuickSortPerformance(long medianCount, long randomCount)
+    {
+        if (medianCount <= randomCount)
+        {
+            medianBetterCount++;
         }
+        else randomBetterCount++;
     }
 
 }
